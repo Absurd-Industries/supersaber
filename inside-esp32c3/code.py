@@ -3,14 +3,15 @@ import random
 import board
 import adafruit_dotstar as dotstar
 import digitalio
-from adafruit_debouncer import Debouncer
+from adafruit_debouncer import Debouncer, Button
 
 pin = digitalio.DigitalInOut(board.D3)
-switch = Debouncer(pin)
+switch = Button(pin, 1000, 2000, True)
 
 # Using a DotStar Digital LED Strip with 30 LEDs connected to hardware SPI
-dots = dotstar.DotStar(board.MOSI, board.SCK, 107, brightness=0.15)
+dots = dotstar.DotStar(board.MOSI, board.SCK, 107, brightness=0.25)
 
+POWER = False
 NUMPIXELS = len(dots)
 HUE = 0
 PULSATING = False
@@ -28,13 +29,23 @@ COLORS = (
 )
 
 def power_on():
-    global HUE, NUMPIXELS
-    # dots.fill((0, 0, 0))
-    # dots.show()
+    global HUE, POWER, NUMPIXELS
     for dot in range(NUMPIXELS):
         dots[dot] = COLORS[HUE]
         dots.show()
-        time.sleep(0.004)
+        time.sleep(0.006)
+    POWER = True
+
+def power_off():
+    global NUMPIXELS, POWER
+    if POWER:
+        for dot in range(NUMPIXELS - 1, -1, -1):
+            dots[dot] = (0, 0, 0)
+            dots.show()
+            time.sleep(0.006)
+        POWER = False
+    else:
+        return
 
 def change_color():
     global HUE
@@ -71,15 +82,20 @@ def pulsate():
 power_on()
 while True:
     switch.update()
-    if switch.rose:
+    if switch.long_press:
+        print('Long Pressed!')
+        if POWER: 
+            power_off()
+        else:
+            power_on()
+            
+    if switch.short_count == 2:
+        print('Double Pressed!')
         change_color()
         power_on()
-        print('pressed')
-    elif switch.fell:
-        len(COLORS)
-    else:
-        len(COLORS)
-        # print('not pressed')
+    
+    if switch.pressed:
+        print('Pressed!')
     
 
 
