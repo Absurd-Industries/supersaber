@@ -9,23 +9,22 @@ pin = digitalio.DigitalInOut(board.D3)
 switch = Debouncer(pin)
 
 # Using a DotStar Digital LED Strip with 30 LEDs connected to hardware SPI
-dots = dotstar.DotStar(board.MOSI, board.SCK, 107, brightness=0.015)
+dots = dotstar.DotStar(board.MOSI, board.SCK, 107, brightness=0.15)
 
 NUMPIXELS = len(dots)
 HUE = 0
 PULSATING = False
 
-colors = (
-    (255, 0, 0), #Red
-    (255, 150, 0), #YELLOW
-    (255, 40, 0), #ORANGE
-    (0, 255, 0), #GREEN
-    (0, 255, 120), #TEAL
-    (0, 255, 255), #CYAN
-    (0, 0, 255), #BLUE
-    (180, 0, 255), #PURPLE
-    (255, 0, 20), #MAGENTA
-    (255, 255, 255) #WHITE
+COLORS = (
+    (255, 25, 25),  #Pink Red
+    (255, 15, 0), #Blood Orange
+    (255, 180, 0), #Gold
+    (70, 255, 0), #Lime
+    (0, 255, 60), #Mint Green
+    (0, 140, 255), #Sky Blue
+    (0, 0, 255), #Blue 
+    (220, 0, 255), #Magenta
+    (255, 0, 0) #Red
 )
 
 def power_on():
@@ -33,13 +32,16 @@ def power_on():
     # dots.fill((0, 0, 0))
     # dots.show()
     for dot in range(NUMPIXELS):
-        dots[dot] = colors[HUE]
+        dots[dot] = COLORS[HUE]
         dots.show()
-        time.sleep(0.008)
+        time.sleep(0.004)
 
 def change_color():
     global HUE
-    HUE += 1
+    if (HUE + 1) == len(COLORS):
+        HUE = 0
+    else: 
+        HUE += 1
 
 def pulsate():
     global HUE, NUMPIXELS, PULSATING
@@ -69,12 +71,14 @@ def pulsate():
 power_on()
 while True:
     switch.update()
-    if switch.fell:
+    if switch.rose:
         change_color()
         power_on()
         print('pressed')
+    elif switch.fell:
+        len(COLORS)
     else:
-        NUMPIXELS = NUMPIXELS
+        len(COLORS)
         # print('not pressed')
     
 
