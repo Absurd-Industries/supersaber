@@ -1,51 +1,62 @@
 import time
 import random
 import board
-import adafruit_dotstar as dotstar
+import neopixel
 import digitalio
-from adafruit_debouncer import Debouncer, Button
+from adafruit_debouncer import Button
 
-pin = digitalio.DigitalInOut(board.D3)
-switch = Button(pin, 1000, 2000, True)
+# Initialize the digital input pin connected to the button
+pin = digitalio.DigitalInOut(board.D4)
+pin.direction = digitalio.Direction.INPUT
+pin.pull = digitalio.Pull.UP
 
-# Using a DotStar Digital LED Strip with 30 LEDs connected to hardware SPI
-dots = dotstar.DotStar(board.MOSI, board.SCK, 107, brightness=0.25)
+# Set up the button with debouncing (to avoid misreads)
+switch = Button(pin, 1000, 3000, False)
 
-POWER = False
-NUMPIXELS = len(dots)
-HUE = 0
-PULSATING = False
+# Initialize the NeoPixel LED strip with 94 LEDs on pin D10
+dots = neopixel.NeoPixel(board.D10, 94, brightness=0.65, auto_write=False)
 
+# Global variables to manage the state of the lightsaber
+POWER = False  # Lightsaber power status (Off by default)
+NUMPIXELS = len(dots)  # Total number of LEDs on the strip
+HUE = 0  # Current color index in the COLORS tuple
+PULSATING = False  # Pulsating effect status; not used yet
+
+# Define a tuple with RGB color codes for different hues
 COLORS = (
+    (0, 0, 255), #Blue 
     (255, 25, 25),  #Pink Red
     (255, 15, 0), #Blood Orange
     (255, 180, 0), #Gold
     (70, 255, 0), #Lime
     (0, 255, 60), #Mint Green
     (0, 140, 255), #Sky Blue
-    (0, 0, 255), #Blue 
     (220, 0, 255), #Magenta
     (255, 0, 0) #Red
 )
 
 def power_on():
+    """Function to turn on the lightsaber and light up the LEDs."""
     global HUE, POWER, NUMPIXELS
     for dot in range(NUMPIXELS):
-        dots[dot] = COLORS[HUE]
-        dots.show()
-        time.sleep(0.006)
+        dots[dot] = COLORS[HUE]  # Set each LED to the current color
+        dots.show()  # Update the LED strip
+        time.sleep(0.008)  # Short delay for the power-on effect
     POWER = True
+    print('Powering On!')
 
 def power_off():
+    """Function to turn off the lightsaber and turn off the LEDs."""
     global NUMPIXELS, POWER
-    if POWER:
+    if POWER:  # Only run if the lightsaber is currently on
         for dot in range(NUMPIXELS - 1, -1, -1):
-            dots[dot] = (0, 0, 0)
-            dots.show()
-            time.sleep(0.006)
+            dots[dot] = (0, 0, 0)  # Set each LED to off (black)
+            dots.show()  # Update the LED strip
+            time.sleep(0.008)  # Short delay for the power-off effect
         POWER = False
     else:
         return
+
 
 def change_color():
     global HUE
@@ -54,6 +65,7 @@ def change_color():
     else: 
         HUE += 1
 
+# Not used for the moment
 def pulsate():
     global HUE, NUMPIXELS, PULSATING
     if PULSATING == True:
@@ -79,10 +91,19 @@ def pulsate():
     PULSATING = False
 
 
-power_on()
+power_on() # Start with the lightsaber powered on
+
+# TEST CODE
+# rainbow = Rainbow(dots, speed=0.0001, period=1)
+# TEST CODE
+
+# Main loop to continuously check the button status
 while True:
-    switch.update()
+    switch.update() # Check the status of the button
+    # rainbow.animate() 
+    
     if switch.long_press:
+        # Handle long press
         print('Long Pressed!')
         if POWER: 
             power_off()
@@ -90,16 +111,11 @@ while True:
             power_on()
             
     if switch.short_count == 2:
+        # Handle double press
         print('Double Pressed!')
-        change_color()
-        power_on()
     
     if switch.pressed:
+        # Handle single press
         print('Pressed!')
-    
-
-
-
-
-
-
+        change_color()
+        power_on()
