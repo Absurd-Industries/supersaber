@@ -11,6 +11,7 @@ Welcome to the Supersaber repository! This codebase is the brain behind the Supe
 
 ## Getting Started
 1. **Assembly Required**: First, put together your Supersaber. If you're thinking, "But how?" – fear not! Imagine you're building a very shiny, very colorful, Jedi-approved jigsaw puzzle.
+![Supersaber Fritzing](fritzing/supersaber-0.1.png "Supersaber Fritzing")
 2. **Install Dependencies**: Make sure you have CircuitPython and necessary libraries like `neopixel` and `adafruit_debouncer`. No CircuitPython? No party!
 3. **Deploy the Code**: Upload this script to your lightsaber's microcontroller. If you're feeling lost, just follow the path of least resistance (and most instructions).
 
