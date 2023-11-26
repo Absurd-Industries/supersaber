@@ -1,5 +1,6 @@
 # Supersaber: Homage to the good ol' lightsaber!
 
+![Supersaber](images/supersaber-desk.jpg "Supersaber")
 ## Overview
 Welcome to the Supersaber repository! This codebase is the brain behind the Supersaber – an open-source lightsaber that's all about being one with the force. It's more than a prop; it's a technicolor dream sword!
 
